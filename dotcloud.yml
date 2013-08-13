@@ -1,0 +1,3 @@
+worker:
+   type: ruby-worker
+
