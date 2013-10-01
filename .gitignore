@@ -2,3 +2,4 @@
 _site
 .vagrant
 .env
+.env-prod

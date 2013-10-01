@@ -3,9 +3,14 @@ require 'cinch'
 require 'dotenv'
 require 'twitter'
 require 'mail'
-require './lib/database'
 
-Dotenv.load
+if ARGV.first
+  Dotenv.load(ARGV.first)
+else
+  Dotenv.load
+end
+
+require './lib/database'
 
 ENV['BOTNAME'] ||= 'Shewbot'
 ENV['BOTCHANNEL'] ||= '5by5'
