@@ -13,7 +13,7 @@ end
 
 get '/titles' do 
 	content_type :json
-	Title.all(:order => [:vote_count.desc]).to_json
+	Title.all(:order => [:vote_count.desc, :id.desc]).to_json
 end
 
 get '/titles/:id/vote' do
@@ -46,14 +46,15 @@ get '/' do
 		<!--<link rel="stylesheet" href="css/shewbot.css">-->
 	</head>
 	<body>
-		<div class="navbar">
-			<div class="container">
+		<div class="container">
+			<div class="navbar navbar-default" role="navigation">
 				<div class="navbar-header">
 					<a class="navbar-brand" href="/">Shewbot</a>
 				</div>
+				<p class="navbar-text pull-right">
+					Don''t refresh, jerks!
+				</p>
 			</div>
-		</div>
-		<div class="container">
 			<h2>' + Show.current.title + '</h2>
 			<div id="titles" class="row">Loading...</div>
 		</div>
