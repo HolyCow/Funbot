@@ -1,5 +1,10 @@
-source :rubygems
+source 'https://rubygems.org'
 gem 'cinch'
 gem 'data_mapper'
 gem 'pg'
 gem 'dm-postgres-adapter'
+gem 'dotenv'
+gem 'twitter'
+gem 'mail'
+gem 'sinatra'
+gem 'sinatra-contrib'

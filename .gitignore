@@ -1,3 +1,4 @@
 .dotcloud
 _site
 .vagrant
+.env

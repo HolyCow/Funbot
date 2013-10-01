@@ -1,118 +1,183 @@
 require 'date'
 require 'cinch'
-require 'data_mapper'
-require 'dm-migrations'
+require 'dotenv'
+require 'twitter'
+require 'mail'
+require './lib/database'
 
-DataMapper::Logger.new($stdout, :debug)
+Dotenv.load
 
-if ENV['HEROKU_POSTGRESQL_IVORY_URL']
-  DataMapper.setup(:default, ENV['HEROKU_POSTGRESQL_IVORY_URL'])
-else
-  DataMapper.setup(:default, {:adapter => 'postgres', :host => 'localhost', :username => 'vagrant', :database => "shewbot", :password => "vagrant"})
+ENV['BOTNAME'] ||= 'Shewbot'
+ENV['BOTCHANNEL'] ||= '5by5'
+
+ENV['BOTCHANNEL'] = '#' + ENV['BOTCHANNEL']
+
+
+
+class TimedEvents
+  include Cinch::Plugin
+
+  timer 30, :method => :send_timer_message
+
+  def send_timer_message
+    puts 'Checking twitter'
+
+    puts ENV['TWITTER_REGEX']
+
+    puts last_tweet
+
+    if last_tweet =~ /#{ENV['TWITTER_REGEX']}/
+      new_show = Regexp.last_match[1]
+
+      currentshow = Show.current
+
+      if currentshow && new_show == Show.current.title
+        return
+      end
+
+      if ENV['EMAIL_ON_NEW_SHOW'] == 1
+
+        options = { :address              => ENV['EMAIL_SERVER'],
+                    :port                 => ENV['EMAIL_PORT'],
+                    :domain               => ENV['EMAIL_DOMAIN'],
+                    :user_name            => ENV['EMAIL_USER'],
+                    :password             => ENV['EMAIL_PASSWORD'],
+                    :authentication       => ENV['EMAIL_AUTH'],
+                    :enable_starttls_auto => true  }
+
+        puts options
+
+        Mail.defaults do
+          delivery_method :smtp, options
+        end
+
+        emailbody = ''
+
+        Title.all.each do | t |
+          emailbody << "#{t.title}, #{t.user}, #{t.votes}\n"
+        end
+
+        if currentshow
+          Mail.deliver do
+                 to ENV['EMAIL_TO']
+               from ENV['EMAIL_USER']
+            subject "Titles for #{currentshow.title}"
+               body emailbody
+          end
+        end
+      end
+
+      if ENV['DELETE_ON_NEW_SHOW'] == 1
+        Title.all.destroy
+        Show.all.destroy
+        Vote.all.destroy
+      end
+
+      Show.create(:title => new_show, :updated_at => Time.new)
+    end
+
+  end
+
 end
 
-class Titles
-  include DataMapper::Resource
-
-  property :id,           Serial    # An auto-increment integer key
-  property :user,         String    
-  property :show,         String    # A varchar type string, for short strings
-  property :title,        Text      # A text block, for longer string data.
-  property :votes,        Integer
-  property :updated_at,   DateTime  # A DateTime, for any date you might like.
-end
-
-class CurrentShow
-  include DataMapper::Resource
-
-  property :id,           Serial    # An auto-increment integer key
-  property :show,         String    
-  property :updated_at,   DateTime  # A DateTime, for any date you might like.
-end
-
-class Voters
-  include DataMapper::Resource
-
-  property :id,           Serial    # An auto-increment integer key
-  property :voter,        String    
-  property :title_id,     Integer  # A DateTime, for any date you might like.
-end
-
-DataMapper.finalize
-
-DataMapper.auto_upgrade!
 
 bot = Cinch::Bot.new do
+
   configure do |c|
-    c.server   = 'irc.freenode.org'
-    c.channels = ["#5by5", "#5by5bottest"]
-    c.nick = 'shewbot'
+    c.server   = ENV['IRC_SERVER']
+    c.channels = [ENV['BOTCHANNEL']]
+    c.nick = ENV['BOTNAME']
+    c.plugins.plugins = [TimedEvents]
   end
 
   on :message, /@5by5: (.*?) with .*? is starting now/ do |m, show|
-    if m.user.nick.downcase == 'showbot' || m.user.nick.downcase == '_holycow'
-      Titles.all.destroy
-      CurrentShow.all.destroy
-      Voters.all.destroy
 
-      CurrentShow.create(:show => show, :updated_at => m.time)
+    if m.user.nick.downcase == 'showbot' || m.user.nick.downcase == '_holycow'
+      emailbody = ''
+
+      puts "---------------"
+      puts "Email on new show = " + ENV['EMAIL_ON_NEW_SHOW']
+      puts "---------------"
+
+      if ENV['EMAIL_ON_NEW_SHOW']
+
+        options = { :address              => ENV['EMAIL_SERVER'],
+                    :port                 => ENV['EMAIL_PORT'],
+                    :domain               => ENV['EMAIL_DOMAIN'],
+                    :user_name            => ENV['EMAIL_USER'],
+                    :password             => ENV['EMAIL_PASSWORD'],
+                    :authentication       => ENV['EMAIL_AUTH'],
+                    :enable_starttls_auto => true  }
+
+        puts options
+
+        Mail.defaults do
+          delivery_method :smtp, options
+        end
+
+        Title.all.each do | t |
+          emailbody << "#{t.title}, #{t.user}, #{t.votes}\n"
+        end
+
+        currentshow = Show.current
+
+        if currentshow
+          Mail.deliver do
+                 to ENV['EMAIL_TO']
+               from ENV['EMAIL_USER']
+            subject "Titles for #{currentshow.title}"
+               body emailbody
+          end
+        end
+      end
+
+      if ENV['DELETE_ON_NEW_SHOW']
+        Title.all.destroy
+        Show.all.destroy
+        Vote.all.destroy
+      end
+
+      Show.create(:title => show, :updated_at => m.time)
     end
   end
 
   on :message, /^!s (.*$)/ do |m, title|
     puts "Got title suggestion #{title}"
 
-    currentshow = CurrentShow.first(:order => [ :updated_at.desc ])
+    currentshow = Show.current
 
-    existingtitle = Titles.first(:title => title, :show => currentshow.show)
+    existingtitle = currentshow.titles.first(:title_lc => title.downcase)
 
     if existingtitle
+      m.user.send "Sorry, that title was already submitted by #{existingtitle.user}"
+    else
 
-      voter_record = Voters.first(:voter => m.user.nick.downcase, :title_id => existingtitle.id)
-
-      if voter_record
-        m.user.send "Sorry, that title was already submitted by #{existingtitle.user} and you have already voted"
-      else
-        existingtitle.votes = existingtitle.votes + 1
-        Voters.create(:voter => m.user.nick.downcase, :title_id => existingtitle.id)
-        m.user.send "Sorry, that title was already submitted by #{existingtitle.user}, so your submission has been added as a vote"
-      end
-   else
-      newtitle = Titles.create(:user => m.user.nick, :show => currentshow.show, :title => title, :updated_at => m.time, :votes => 1)
-      Voters.create(:voter => m.user.nick.downcase, :title_id => newtitle.id)
+      newtitle = currentshow.titles.create(:user => m.user.nick, :title => title, :title_lc => title.downcase, :updated_at => m.time, :vote_count => 0)
+      puts newtitle
     end
     
   end
 
-  on :message, /^!list/ do |m|
-
-    currentshow = CurrentShow.first(:order => [ :updated_at.desc ])
-
-    title_set = Titles.all(:show => currentshow.show, :limit => 20, :order => [ :votes.desc, :updated_at.desc ])
-
-    m.user.send "Title suggestions for #{currentshow.show} (#{title_set.count})"
-
-    title_set.each do |title|
-      m.user.send "'#{title.title}' suggested by #{title.user} (#{title.votes})"
-    end
-  end
-
-  on :message, /^!latest/ do |m|
-
-    currentshow = CurrentShow.first(:order => [ :updated_at.desc ])
-
-    title_set = Titles.all(:show => currentshow.show, :limit => 20, :order => [ :updated_at.desc ])
-
-    m.user.send "Title suggestions for #{currentshow.show} (#{title_set.count})"
-
-    title_set.each do |title|
-      m.user.send "'#{title.title}' suggested by #{title.user} (#{title.votes})"
-    end
-  end
-
   on :message, /^!help/ do |m|
-    m.user.send "!s - suggest a title or vote up a title; !list - get a list of show titles ordered by votes, then submission time, limited to 20; !latest - last 20 submissions; !help - this"
+    m.user.send "!s - suggest a title; !last - I'll tell you what last tweet by @#{ENV['TWITTER_USER']}; !help - this"
   end
+
+  on :message, /^!last/ do |m|
+    m.user.send last_tweet
+  end
+
+end
+
+def last_tweet
+  Twitter.configure do |config|
+    config.consumer_key = ENV['TWITTER_CONSUMER_KEY']
+    config.consumer_secret = ENV['TWITTER_CONSUMER_SECRET']
+    config.oauth_token = ENV['TWITTER_OAUTH_TOKEN']
+    config.oauth_token_secret = ENV['TWITTER_OAUTH_TOKEN_SECRET']
+  end
+
+  status = Twitter.user_timeline(ENV['TWITTER_USER']).first
+  return status.text
 end
 
 bot.start

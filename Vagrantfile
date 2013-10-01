@@ -7,6 +7,8 @@ Vagrant.configure("2") do |config|
 
   config.ssh.forward_agent = true
 
+  config.vm.network :forwarded_port, guest: 4567, host: 4567
+
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = ["chef/cookbooks"]
     chef.add_recipe "apt"
