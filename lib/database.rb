@@ -2,8 +2,8 @@ require 'data_mapper'
 require 'dm-migrations'
 require 'dm-serializer'
 
-if ENV['HEROKU_POSTGRESQL_' + ENV['HEROKU_DB_NAME'] + '_URL']
-  DataMapper.setup(:default, ENV['HEROKU_POSTGRESQL_' + ENV['HEROKU_DB_NAME'] + '_URL'])
+if ENV['DATABASE_URL']
+  DataMapper.setup(:default, ENV['DATABASE_URL'])
 else
   DataMapper::Logger.new($stdout, :debug)
   DataMapper.setup(:default, {:adapter => 'postgres', :host => 'localhost', :username => 'vagrant', :database => "shewbot", :password => "vagrant"})
