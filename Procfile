@@ -1,1 +1,2 @@
-worker: bundle exec ruby lib/seenbot.rb
+worker: bundle exec ruby lib/shewbot.rb
+
