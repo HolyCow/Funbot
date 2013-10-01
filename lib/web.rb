@@ -20,12 +20,10 @@ get '/titles/:id/vote' do
 	title = Title.get(params[:id]);
 	puts title
 	if title
-		ipaddr = request.ip.gsub /[.]/, ""
-		puts ipaddr
-		voted = title.votes(:voter => ipaddr).count
+		voted = title.votes(:voter_ip => request.ip).count
 		puts voted
 		if voted == 0
-			title.votes.create(:voter => ipaddr)
+			title.votes.create(:voter_ip => request.ip)
 			title.update(:vote_count => title.votes.count)
 			title.save
 			puts title

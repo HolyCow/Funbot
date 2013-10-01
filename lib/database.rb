@@ -1,6 +1,7 @@
 require 'data_mapper'
 require 'dm-migrations'
 require 'dm-serializer'
+require 'dm-types'
 
 if ENV['DATABASE_URL']
   DataMapper.setup(:default, ENV['DATABASE_URL'])
@@ -43,6 +44,7 @@ class Vote
 
   property :id,           Serial    # An auto-increment integer key
   property :voter,        Integer   
+  property :voter_ip,     IPAddress
   
   belongs_to :title
 end
