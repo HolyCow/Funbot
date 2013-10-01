@@ -59,7 +59,7 @@ class TimedEvents
         emailbody = ''
 
         Title.all.each do | t |
-          emailbody << "#{t.title}, #{t.user}, #{t.votes}\n"
+          emailbody << "#{t.title}, #{t.user}, #{t.vote_count}\n"
         end
 
         if currentshow
@@ -73,9 +73,9 @@ class TimedEvents
       end
 
       if ENV['DELETE_ON_NEW_SHOW'] == 1
+        Vote.all.destroy
         Title.all.destroy
         Show.all.destroy
-        Vote.all.destroy
       end
 
       Show.create(:title => new_show, :updated_at => Time.new)
