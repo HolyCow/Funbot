@@ -9,4 +9,7 @@ gem 'twitter'
 gem 'mail'
 gem 'sinatra'
 gem 'sinatra-contrib'
-gem 'rspec'
+
+group :test do 
+	gem 'rspec'
+end
