@@ -1,6 +1,11 @@
 require 'sinatra'
 require 'sinatra/json'
-require './lib/database'
+
+require './lib/init'
+
+require './lib/models/Show'
+require './lib/models/Title'
+require './lib/models/Vote'
 
 set :bind, '0.0.0.0'
 set :static, true
@@ -18,15 +23,12 @@ end
 
 get '/titles/:id/vote' do
 	title = Title.get(params[:id]);
-	puts title
 	if title
 		voted = title.votes(:voter_ip => request.ip).count
-		puts voted
 		if voted == 0
 			title.votes.create(:voter_ip => request.ip)
 			title.update(:vote_count => title.votes.count)
 			title.save
-			puts title
 		end
 		"#{title.votes.count}"
 	end

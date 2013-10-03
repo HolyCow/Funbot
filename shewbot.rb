@@ -3,21 +3,9 @@ require 'cinch'
 require 'dotenv'
 require 'twitter'
 require 'mail'
-
-if ARGV.first
-  Dotenv.load(ARGV.first)
-else
-  Dotenv.load
-end
-
-require './lib/database'
-
-ENV['BOTNAME'] ||= 'Shewbot'
-ENV['BOTCHANNEL'] ||= '5by5'
+require './lib/init'
 
 ENV['BOTCHANNEL'] = '#' + ENV['BOTCHANNEL']
-
-
 
 class TimedEvents
   include Cinch::Plugin

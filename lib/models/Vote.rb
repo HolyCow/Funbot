@@ -1,5 +1,4 @@
-require 'data_mapper'
-require 'dm-serializer'
+require 'dm-core'
 require 'dm-types'
 
 class Vote
