@@ -1,4 +1,6 @@
 require 'dm-core'
+require 'dm-timestamps'
+require 'dm-constraints'
 
 require './lib/Models/Title'
 
@@ -7,11 +9,11 @@ class Show
 
   property :id,           Serial    # An auto-increment integer key
   property :title,        String    
-  property :updated_at,   DateTime, :default => DateTime.new()
+  property :created_at,   DateTime
 
   has n, :titles, :constraint => :destroy
 
   def self.current
-    first(:order => [ :updated_at.desc, :id.desc ])
+    first(:order => [ :created_at.desc, :id.desc ])
   end
 end

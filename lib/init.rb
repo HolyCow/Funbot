@@ -1,4 +1,5 @@
 require 'dm-core'
+require 'dm-migrations'
 require 'dotenv'
 
 if ARGV.first
@@ -7,12 +8,9 @@ else
   Dotenv.load
 end
 
-configure :development do 
+if ENV['DATABASE_URL']
   DataMapper.setup(:default, ENV['DATABASE_URL'])
-  DataMapper::Logger.new($stdout, :debug)
-end
-
-configure :test do 
+else 
   DataMapper.setup(:default, "sqlite::memory:")
 end
 

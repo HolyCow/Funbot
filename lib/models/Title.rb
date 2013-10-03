@@ -1,5 +1,8 @@
 require 'dm-core'
+require 'dm-validations'
+require 'dm-serializer'
 require 'dm-constraints'
+
 
 require './lib/Models/Vote'
 
@@ -11,7 +14,7 @@ class Title
   property :title,        String,   :length => 100, :message => "That suggestion was too long."
   property :title_lc,     String,   :length => 100
   property :vote_count,   Integer,  :default => 0
-  property :updated_at,   DateTime, :default => DateTime.new()
+  property :created_at,   DateTime
 
   belongs_to :show
   has n, :votes, :constraint => :destroy
