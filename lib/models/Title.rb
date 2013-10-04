@@ -20,9 +20,12 @@ class Title
   has n, :votes, :constraint => :destroy
 
   def upvote(voter_ip)
-  	vote = votes.create(:voter_ip => voter_ip)
-	update(:vote_count => votes.count)
-	save
+  	vote = votes(:voter_ip => voter_ip).count
+  	if vote == 0
+	  	vote = votes.create(:voter_ip => voter_ip)
+		update(:vote_count => votes.count)
+		save
+	end
 	vote
   end
 

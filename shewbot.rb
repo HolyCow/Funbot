@@ -1,9 +1,19 @@
 require 'date'
 require 'cinch'
-require 'dotenv'
-require 'twitter'
 require 'mail'
+require 'twitter'
+
+require './lib/Models/Show'
+require './lib/Models/TwitterOps'
+
 require './lib/init'
+
+Twitter.configure do |config|
+  config.consumer_key = ENV['TWITTER_CONSUMER_KEY']
+  config.consumer_secret = ENV['TWITTER_CONSUMER_SECRET']
+  config.oauth_token = ENV['TWITTER_OAUTH_TOKEN']
+  config.oauth_token_secret = ENV['TWITTER_OAUTH_TOKEN_SECRET']
+end
 
 ENV['BOTCHANNEL'] = '#' + ENV['BOTCHANNEL']
 
@@ -14,18 +24,19 @@ class TimedEvents
 
   def send_timer_message
 
-    if last_tweet =~ /#{ENV['TWITTER_REGEX']}/
-      new_show = Regexp.last_match[1]
+    show_name = TwitterOps::Tweets.parse_tweet(TwitterOps::Tweets.last_tweet(ENV['TWITTER_USER']), ENV['TWITTER_REGEX'])
 
-      currentshow = Show.current
+    if show_name
 
-      if currentshow && new_show == Show.current.title
+      current_show = Show.current
+
+      if current_show && show_name == current_show.title
         return
       end
 
-      Show.create(:title => new_show, :updated_at => Time.new)
+      Show.create(:title => show_name)
 
-      if ENV['EMAIL_ON_NEW_SHOW'] == 1
+      if ENV['EMAIL_ON_NEW_SHOW'] && ENV['EMAIL_ON_NEW_SHOW'].to_i == 1 && current_show
 
         options = { :address              => ENV['EMAIL_SERVER'],
                     :port                 => ENV['EMAIL_PORT'],
@@ -35,7 +46,7 @@ class TimedEvents
                     :authentication       => ENV['EMAIL_AUTH'],
                     :enable_starttls_auto => true  }
 
-        puts options
+        puts 'EMAIL OPTIONS: ' + options
 
         Mail.defaults do
           delivery_method :smtp, options
@@ -57,13 +68,11 @@ class TimedEvents
         end
       end
 
-      puts ENV['DELETE_ON_NEW_SHOW']
+      puts 'DELETE_ON_NEW_SHOW: ' + ENV['DELETE_ON_NEW_SHOW']
 
-      if ENV['DELETE_ON_NEW_SHOW'] == 1
+      if ENV['DELETE_ON_NEW_SHOW'] && ENV['DELETE_ON_NEW_SHOW'].to_i == 1 && current_show
         puts "Deleting all records"
-        currentshow.votes.destroy
-        currentshow.titles.destroy
-        currentshow.destroy
+        Show.destroy
       end
 
     end
@@ -93,7 +102,7 @@ bot = Cinch::Bot.new do
       m.user.send "Sorry, that title was already submitted by #{existingtitle.user}"
     else
 
-      newtitle = currentshow.titles.create(:user => m.user.nick, :title => title, :title_lc => title.downcase, :updated_at => m.time, :vote_count => 0)
+      newtitle = currentshow.titles.create(:user => m.user.nick, :title => title, :title_lc => title.downcase, :vote_count => 0)
       puts newtitle
     end
     
@@ -110,13 +119,6 @@ bot = Cinch::Bot.new do
 end
 
 def last_tweet
-  Twitter.configure do |config|
-    config.consumer_key = ENV['TWITTER_CONSUMER_KEY']
-    config.consumer_secret = ENV['TWITTER_CONSUMER_SECRET']
-    config.oauth_token = ENV['TWITTER_OAUTH_TOKEN']
-    config.oauth_token_secret = ENV['TWITTER_OAUTH_TOKEN_SECRET']
-  end
-
   status = Twitter.user_timeline(ENV['TWITTER_USER']).first
   return status.text
 end

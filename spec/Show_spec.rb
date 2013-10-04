@@ -7,5 +7,12 @@ describe 'Show' do
 		show = Show.create(:title => "This is a title")
 		Show.current.title.should == "This is a title"
 	end
+
+	it "should return the last submitted title as the current even if we submit more titles" do
+		show = Show.create(:title => "My first show")
+		show = Show.create(:title => "This is a title")
+		Show.current.title.should == "This is a title"
+	end
+
 end
 

@@ -1,11 +1,11 @@
 require 'sinatra'
 require 'sinatra/json'
 
-require './lib/init'
-
 require './lib/models/Show'
 require './lib/models/Title'
 require './lib/models/Vote'
+
+require './lib/init'
 
 set :bind, '0.0.0.0'
 set :static, true
@@ -24,17 +24,16 @@ end
 get '/titles/:id/vote' do
 	title = Title.get(params[:id]);
 	if title
-		voted = title.votes(:voter_ip => request.ip).count
-		if voted == 0
-			title.votes.create(:voter_ip => request.ip)
-			title.update(:vote_count => title.votes.count)
-			title.save
-		end
+		title.upvote(request.ip)
 		"#{title.votes.count}"
 	end
 end
 
 get '/' do 
+	current_title = ''
+	if Show.current
+		current_title = Show.current.title
+	end
 '
 <!DOCTYPE html>
 <html lang="en">
@@ -55,7 +54,7 @@ get '/' do
 					Don''t refresh, jerks!
 				</p>
 			</div>
-			<h2>' + Show.current.title + '</h2>
+			<h2>' + current_title + '</h2>
 			<div id="titles" class="row">Loading...</div>
 		</div>
 		<script id="headerTemplate" type="text/template">

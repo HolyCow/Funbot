@@ -8,5 +8,7 @@ DataMapper.finalize
 DataMapper.auto_upgrade!
 
 RSpec.configure do |config|
-	
+	config.after(:all) do
+		Show.all.destroy
+	end
 end

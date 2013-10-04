@@ -9,8 +9,12 @@
     Shewbot.Titles = Backbone.Collection.extend({
         url: "/titles",
         model: Shewbot.Title,
-        comparator: function(title) {
-            return -title.get("vote_count");
+        comparator: function(a, b) {
+            return a.get("vote_count") < b.get("vote_count") ?  1
+                 : a.get("vote_count") > b.get("vote_count") ? -1
+                 : a.get("id") < b.get("id") ?  1
+                 : a.get("id") > b.get("id") ? -1
+                 :                              0;
         }
     })
 
