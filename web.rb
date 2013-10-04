@@ -1,11 +1,9 @@
 require 'sinatra'
 require 'sinatra/json'
 
-require './lib/models/Show'
-require './lib/models/Title'
-require './lib/models/Vote'
+require File.dirname(__FILE__) + '/lib/models/Show'
 
-require './lib/init'
+require File.dirname(__FILE__) + '/lib/init'
 
 set :bind, '0.0.0.0'
 set :static, true

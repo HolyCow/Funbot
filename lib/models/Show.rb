@@ -2,7 +2,7 @@ require 'dm-core'
 require 'dm-timestamps'
 require 'dm-constraints'
 
-require './lib/Models/Title'
+require File.dirname(__FILE__) + '/Title'
 
 class Show
   include DataMapper::Resource

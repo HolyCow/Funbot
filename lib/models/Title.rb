@@ -4,7 +4,7 @@ require 'dm-serializer'
 require 'dm-constraints'
 
 
-require './lib/Models/Vote'
+require File.dirname(__FILE__) + '/Vote'
 
 class Title
   include DataMapper::Resource
