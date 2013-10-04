@@ -8,6 +8,7 @@ gem 'twitter'
 gem 'mail'
 gem 'sinatra'
 gem 'sinatra-contrib'
+gem 'thin'
 
 group :development, :production do
 	gem 'dm-postgres-adapter'

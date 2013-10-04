@@ -1,2 +1,4 @@
 require './web.rb'
-run Sinatra::Application
+
+Rack::Handler::Thin.run Sinatra::Application, :Port => 4567
+
