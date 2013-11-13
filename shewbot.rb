@@ -34,8 +34,6 @@ class TimedEvents
         return
       end
 
-      Show.create(:title => show_name)
-
       if ENV['EMAIL_ON_NEW_SHOW'] && ENV['EMAIL_ON_NEW_SHOW'].to_i == 1 && current_show
 
         options = { :address              => ENV['EMAIL_SERVER'],
@@ -45,8 +43,6 @@ class TimedEvents
                     :password             => ENV['EMAIL_PASSWORD'],
                     :authentication       => ENV['EMAIL_AUTH'],
                     :enable_starttls_auto => true  }
-
-        puts 'EMAIL OPTIONS: ' + options
 
         Mail.defaults do
           delivery_method :smtp, options
@@ -58,11 +54,11 @@ class TimedEvents
           emailbody << "#{t.title}, #{t.user}, #{t.vote_count}\n"
         end
 
-        if currentshow
+        if current_show
           Mail.deliver do
                  to ENV['EMAIL_TO']
                from ENV['EMAIL_USER']
-            subject "Titles for #{currentshow.title}"
+            subject "Titles for #{current_show.title}"
                body emailbody
           end
         end
@@ -74,6 +70,8 @@ class TimedEvents
         puts "Deleting all records"
         Show.destroy
       end
+
+      Show.create(:title => show_name)
 
     end
 
