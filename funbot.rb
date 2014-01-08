@@ -74,6 +74,10 @@ bot = Cinch::Bot.new do
 		m.reply "Call in to Quit! Live at (512) 518-5714. Leave a Voicemail at (512) 222-8141."
 	end
 
+  on :message, /^!dlc/ do |m|
+		m.reply "Call in to DLC Live at (512) 518-5714."
+	end
+
 	on :message, /^!jim/ do |m|
 		m.reply 'HaHa' * rand(20)
 	end
