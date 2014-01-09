@@ -78,12 +78,16 @@ bot = Cinch::Bot.new do
 		m.reply "Call in to DLC Live at (512) 518-5714."
 	end
 
+  on :message, /^!rant/ do |m|
+		m.reply "Skype is the WORST!"
+	end
+
 	on :message, /^!jim/ do |m|
 		m.reply 'HaHa' * rand(20)
 	end
 
   on :message, /^!help/ do |m|
-		m.user.send "Commands: !merlin, !dan, !haddie, !neckbeard, !marco, !jsir, !quit, !jim"
+		m.user.send "Commands: !merlin, !dan, !haddie, !neckbeard, !marco, !jsir, !quit, !jim, !dlc, !rant"
 	end
 
 end
