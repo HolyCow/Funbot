@@ -79,15 +79,33 @@ bot = Cinch::Bot.new do
 	end
 
   on :message, /^!rant/ do |m|
-		m.reply "Skype is the WORST!"
+		m.reply [
+			"Skype is the WORST!",
+			"Smart TVs are the WORST!",
+			"Python is the WORST! Who wants all those tabs!"
+			].sample
 	end
 
 	on :message, /^!jim/ do |m|
 		m.reply 'HaHa' * rand(20)
 	end
 
+	on :message, /^!earworm/ do |m|
+		m.reply 'http://www.youtube.com/djearworm'
+	end
+
+	on :message, /^!soundboard/ do |m|
+		m.reply [
+			'WHAT!',
+			'OK!',
+			'YEAH!',
+			'Whoa-ha-ho!',
+			'Theatre of the mind'
+		].sample
+	end
+
   on :message, /^!help/ do |m|
-		m.user.send "Commands: !merlin, !dan, !haddie, !neckbeard, !marco, !jsir, !quit, !jim, !dlc, !rant"
+		m.user.send "Commands: !merlin, !dan, !haddie, !neckbeard, !marco, !jsir, !quit, !jim, !dlc, !rant, !earworm, !soundboard"
 	end
 
 end
