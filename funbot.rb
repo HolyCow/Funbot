@@ -42,7 +42,10 @@ bot = Cinch::Bot.new do
 			"Eww, the cat is weird",
 			"We have to worry about space germs too. Ughhhhhhhhh! Why?!?!",
 			"I don't think that is the proper way to do it.",
-			"The little...the little long box."
+			"The little...the little long box.",
+			"'scuse me!",
+			"*gasp*",
+			"OH MY GOSH!"
 		].sample
 	end
 
@@ -66,7 +69,8 @@ bot = Cinch::Bot.new do
 			"Big week. Huge week.",
 			"It's your show.",
 			"Go ahead caller.",
-			"Keeping you up, Haddie?"
+			"Keeping you up, Haddie?",
+			"Who comes in here and changes everything!?!?"
 		].sample
 	end
 
@@ -100,7 +104,16 @@ bot = Cinch::Bot.new do
 			'OK!',
 			'YEAH!',
 			'Whoa-ha-ho!',
-			'Theatre of the mind'
+			'Theatre of the mind',
+			'That\'s your name dude',
+			'Do NOT...go in there!',
+			'Mark it zero, next frame.',
+			'I don\'t stop nothing, you idiot',
+			'Ding ding ding',
+			'Bzzzzzzzzzzzzt',
+			"What what what!",
+			"Hmmmmmmmm!",
+			"RAWR!"
 		].sample
 	end
 
