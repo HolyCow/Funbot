@@ -137,7 +137,7 @@ bot = Cinch::Bot.new do
 			'OK!',
 			'YEAH!',
 			'What\'s happening?!'
-		]
+		].sample
 	end
 
   on :message, /^!help/ do |m|
