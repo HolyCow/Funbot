@@ -45,7 +45,8 @@ bot = Cinch::Bot.new do
 			"The little...the little long box.",
 			"'scuse me!",
 			"*gasp*",
-			"OH MY GOSH!"
+			"OH MY GOSH!",
+			"The UK"
 		].sample
 	end
 
@@ -76,6 +77,10 @@ bot = Cinch::Bot.new do
 
   on :message, /^!quit/ do |m|
 		m.reply "Call in to Quit! Live at (512) 518-5714. Leave a Voicemail at (512) 222-8141."
+	end
+
+  on :message, /^!showbot/ do |m|
+		m.reply "To submit titles type \"!s Title to suggest\" (without quotes). To vote on titles go to http://showbot.5by5.tv"
 	end
 
   on :message, /^!dlc/ do |m|
@@ -113,12 +118,30 @@ bot = Cinch::Bot.new do
 			'Bzzzzzzzzzzzzt',
 			"What what what!",
 			"Hmmmmmmmm!",
-			"RAWR!"
+			"RAWR!",
+			"Hah heh",
+			"Hegh! I need to sleep!",
+			"USA! USA! USA!",
+			"Third prize is you're fired.",
+			"Way of the future",
+			"Egh, I want to get this right so show me the blueprints",
+			"Coffee is for closers",
+			"I used to be a salesman ... tough racket.",
+			"They're going to kill that poor woman."
 		].sample
 	end
 
+	on :message, /^!liljohn/ do |m|
+		m.reply [
+			'WHAT!',
+			'OK!',
+			'YEAH!',
+			'What\'s happening?!'
+		]
+	end
+
   on :message, /^!help/ do |m|
-		m.user.send "Commands: !merlin, !dan, !haddie, !neckbeard, !marco, !jsir, !quit, !jim, !dlc, !rant, !earworm, !soundboard"
+		m.user.send "Commands: !merlin, !dan, !haddie, !neckbeard, !marco, !jsir, !quit, !jim, !dlc, !rant, !earworm, !soundboard, !liljohn, !showbot"
 	end
 
 end
