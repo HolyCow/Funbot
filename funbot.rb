@@ -103,6 +103,10 @@ bot = Cinch::Bot.new do
 		m.reply 'http://www.youtube.com/djearworm'
 	end
 
+	on :message, /^!recursion/ do |m|
+		m.reply '!recursion'
+	end
+
 	on :message, /^!soundboard/ do |m|
 		m.reply [
 			'WHAT!',
@@ -141,7 +145,7 @@ bot = Cinch::Bot.new do
 	end
 
   on :message, /^!help/ do |m|
-		m.user.send "Commands: !merlin, !dan, !haddie, !neckbeard, !marco, !jsir, !quit, !jim, !dlc, !rant, !earworm, !soundboard, !liljohn, !showbot"
+		m.user.send "Commands: !merlin, !dan, !haddie, !neckbeard, !marco, !jsir, !quit, !jim, !dlc, !rant, !earworm, !soundboard, !liljohn, !showbot, !recursion"
 	end
 
 end
