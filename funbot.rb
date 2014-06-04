@@ -10,7 +10,7 @@ class Quote
 
   property :id,           Serial
   property :macro,        String,  :index => true
-  property :quote,        String
+  property :quote,        Text
   property :live,         Boolean, :default => false
   property :created_at,   DateTime
 end
