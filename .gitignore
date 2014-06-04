@@ -3,3 +3,4 @@ _site
 .vagrant
 .env
 .env-prod
+test.db
