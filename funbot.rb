@@ -44,7 +44,7 @@ bot = Cinch::Bot.new do
   on :message, /^!([^ ]+) ?$/ do |m, macro|
     puts "Got #{macro}"
     if !['help', 'quote'].include?(macro)
-      quotes = Quote.all(:macro => macro)
+      quotes = Quote.all(:macro => macro, :live => true)
       if quotes.length > 0
         m.reply quotes.sample.quote
       end
