@@ -12,6 +12,7 @@ class Quote
   property :macro,        String,  :index => true
   property :quote,        Text
   property :live,         Boolean, :default => false
+  property :submitter,    String
   property :created_at,   DateTime
 end
 
@@ -35,9 +36,9 @@ bot = Cinch::Bot.new do
   on :message, /^!quote (.*?) (.+)/ do |m, macro, quote|
     puts "Got quote suggestions #{macro} - #{quote}"
     if !['help', 'quote'].include?(macro)
-      Quote.create(:macro => macro, :quote => quote)
+      Quote.create(:macro => macro, :quote => quote, :submitter => m.user.nick)
     end
-    m.user.send "Quote has been added to the queue and will not be available immediately"
+    m.user.send "Quote has been added to the queue and will not be available until it has been approved"
   end
 
   on :message, /^!([^ ]+) ?$/ do |m, macro|
