@@ -5,8 +5,8 @@ bot = Cinch::Bot.new do
 
   configure do |c|
     c.server   = 'irc.freenode.org'
-    c.channels = ['#5by5']
-    c.nick = 'fivebyfunbot'
+    c.channels = ['#' + ENV['channel']]
+    c.nick = ENV['botname']
   end
 
   on :message, /^!merlin/ do |m|
