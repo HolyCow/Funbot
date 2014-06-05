@@ -53,7 +53,7 @@ bot = Cinch::Bot.new do
 
   on :message, /^!help/ do |m|
     m.user.send "Add a quote: !quote <macro> <quote>; Available macros: !" + 
-      Quote.all(:conditions => { :live => true }, :fields => [:macro]).map{ |x| x.macro }.join(', !',)
+      Quote.all(:conditions => { :live => true }, :fields => [:macro], :unique => true).map{ |x| x.macro }.join(', !',)
   end
 
 end
